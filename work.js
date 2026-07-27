@@ -4,6 +4,7 @@ const dueDateInput = document.getElementById('dueDateInput');
 const searchInput = document.getElementById('searchInput');
 const tasksList = document.getElementById('tasks');
 const clearCompletedBtn = document.getElementById('clearCompleted');
+const progressFill = document.getElementById('progressFill');
 const themeToggle = document.getElementById('themeToggle');
 const filterButtons = document.querySelectorAll('.filter-btn');
 const totalCount = document.getElementById('totalCount');
@@ -17,6 +18,18 @@ const themeKey = 'smartTodoTheme';
 
 const saveTasks = () => {
   localStorage.setItem('smartTodoTasks', JSON.stringify(tasks));
+};
+
+const setTheme = (theme) => {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem(themeKey, theme);
+};
+
+const loadTheme = () => {
+  const storedTheme = localStorage.getItem(themeKey);
+  if (storedTheme) {
+    document.documentElement.dataset.theme = storedTheme;
+  }
 };
 
 const formatDate = (timestamp) => {
@@ -105,8 +118,14 @@ const renderTasks = () => {
   totalCount.textContent = tasks.length;
   completedCount.textContent = completedCountValue;
   remainingCount.textContent = tasks.length - completedCountValue;
-  progressFill.style.width = tasks.length === 0 ? '0%' : `${Math.round((completedCountValue / tasks.length) * 100)}%`;
-  clearCompletedBtn.disabled = completedCountValue === 0;
+
+  if (progressFill) {
+    progressFill.style.width = tasks.length === 0 ? '0%' : `${Math.round((completedCountValue / tasks.length) * 100)}%`;
+  }
+
+  if (clearCompletedBtn) {
+    clearCompletedBtn.disabled = completedCountValue === 0;
+  }
 };
 
 const addTask = (title, dueDate) => {
@@ -204,10 +223,12 @@ filterButtons.forEach((button) => {
   button.addEventListener('click', () => changeFilter(button.dataset.filter));
 });
 
-themeToggle.addEventListener('click', () => {
-  const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-  setTheme(nextTheme);
-});
+if (themeToggle) {
+  themeToggle.addEventListener('click', () => {
+    const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+  });
+}
 
 loadTheme();
 renderTasks();
