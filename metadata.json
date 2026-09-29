@@ -1,0 +1,6 @@
+{
+  "name": "Smart To-Do List",
+  "description": "A smart to-do list app with task creation, due dates, filters, inline editing, and search.",
+  "permissions": [],
+  "capabilities": []
+}

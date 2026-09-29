@@ -1,0 +1,15 @@
+{
+  "name": "smart-to-do-list",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A smart to-do list app with task creation, due dates, filters, inline editing, and search.",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node -e \"console.log('Build completed')\""
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

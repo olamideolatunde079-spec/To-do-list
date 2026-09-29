@@ -3,63 +3,169 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My To-Do List</title>
+  <title>Smart To-Do List</title>
+  <meta name="description" content="A smart to-do list app with task creation, due dates, priority levels, filters, inline editing, and search." />
+  <meta property="og:title" content="Smart To-Do List" />
+  <meta property="og:description" content="A smart to-do list app with task creation, due dates, priority levels, filters, inline editing, and search." />
   <link rel="stylesheet" href="style.css" />
- <link rel="shortcut icon" href="OlaByt.png" type="image/x-icon">
+  <link rel="shortcut icon" href="OlaByt.png" type="image/x-icon" />
 </head>
 <body>
-  <div>
   <div class="app-shell">
+    <!-- Top Header -->
     <header class="app-header">
-      <div>
-        <h1>Smart To-Do List</h1>
+      <div class="brand-group">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Smart To-Do List</h1>
+          <p class="brand-date" id="currentDateDisplay">Today</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="clearCompleted" class="btn btn-secondary btn-danger-ghost" title="Clear all completed tasks">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Clear Done
+        </button>
+
+        <button id="themeToggle" class="btn-icon" aria-label="Toggle dark mode" title="Toggle theme">
+          <svg id="themeIconSun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="themeIconMoon" style="display:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
       </div>
     </header>
 
-    <section class="task-creator card">
-      <form id="taskForm">
-        <label for="taskInput">New task</label>
-        <div class="input-group">
-          <input id="taskInput" type="text" placeholder="Add a new task..." autocomplete="off"></input>
-          <input id="dueDateInput" type="date"> </input>
-          <button type="submit">Add</button>
+    <!-- Stats & Progress -->
+    <section class="card stats-card" aria-label="Task progress summary">
+      <div class="stat-grid">
+        <div class="stat-item">
+          <span class="stat-label">Total</span>
+          <strong id="totalCount" class="stat-value tabular-nums">0</strong>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Active</span>
+          <strong id="remainingCount" class="stat-value tabular-nums">0</strong>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Done</span>
+          <strong id="completedCount" class="stat-value tabular-nums" style="color: #10b981;">0</strong>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Overdue</span>
+          <strong id="overdueCount" class="stat-value tabular-nums" style="color: #ef4444;">0</strong>
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-header">
+          <span>Completion Progress</span>
+          <span id="progressPercent" class="tabular-nums">0%</span>
+        </div>
+        <div class="progress-bar-track">
+          <div id="progressFill" class="progress-bar-fill"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Task Creator -->
+    <section class="card task-creator-card" aria-label="Create new task">
+      <form id="taskForm" class="task-form-layout">
+        <input id="taskInput" class="input-field task-input-primary" type="text" placeholder="What needs to be done?" autocomplete="off" required />
+        
+        <div class="task-form-sub-row">
+          <input id="dueDateInput" class="input-field" type="date" title="Due date" aria-label="Due date" />
+
+          <select id="priorityInput" class="input-field" aria-label="Priority level" title="Select Priority">
+            <option value="medium">Medium Priority</option>
+            <option value="high">High Priority</option>
+            <option value="low">Low Priority</option>
+          </select>
+
+          <button type="submit" class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Task
+          </button>
         </div>
       </form>
     </section>
 
-    <section class="controls card">
-      <div class="search-group">
-        <label for="searchInput">Search</label>
-        <input id="searchInput" type="search" placeholder="Search tasks..." />
+    <!-- Search & Filters -->
+    <section class="card controls-card" aria-label="Search and filter tasks">
+      <div class="search-row">
+        <div class="search-wrapper">
+          <span class="search-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input id="searchInput" class="input-field search-input" type="search" placeholder="Search tasks..." />
+          <button type="button" id="searchClearBtn" class="search-clear-btn" aria-label="Clear search">✕</button>
+        </div>
+
+        <div class="sort-wrapper">
+          <select id="sortSelect" class="input-field" aria-label="Sort tasks">
+            <option value="created-desc">Newest First</option>
+            <option value="created-asc">Oldest First</option>
+            <option value="due-asc">Due Date</option>
+            <option value="priority-desc">Priority</option>
+            <option value="title-asc">A to Z</option>
+          </select>
+        </div>
       </div>
-      <div class="filters">
-        <button type="button" class="filter-btn active" data-filter="all">All</button>
-        <button type="button" class="filter-btn" data-filter="active">Active</button>
-        <button type="button" class="filter-btn" data-filter="completed">Completed</button>
+
+      <div class="filters-row">
+        <div class="filter-group" role="tablist">
+          <button type="button" class="filter-btn active" data-filter="all" role="tab">All <span id="filterCountAll" class="filter-count tabular-nums"></span></button>
+          <button type="button" class="filter-btn" data-filter="active" role="tab">Active <span id="filterCountActive" class="filter-count tabular-nums"></span></button>
+          <button type="button" class="filter-btn" data-filter="completed" role="tab">Done <span id="filterCountCompleted" class="filter-count tabular-nums"></span></button>
+          <button type="button" class="filter-btn" data-filter="overdue" role="tab">Overdue <span id="filterCountOverdue" class="filter-count tabular-nums"></span></button>
+        </div>
+
+        <button type="button" id="markAllCompletedBtn" class="btn btn-secondary" style="font-size: 0.74rem; padding: 4px 8px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Mark All
+        </button>
       </div>
     </section>
 
-    <section class="stats card">
-      <div class="stat-grid">
-        <div>
-          <p>Total</p>
-          <strong id="totalCount">0</strong>
-        </div>
-        <div>
-          <p>Completed</p>
-          <strong id="completedCount">0</strong>
-        </div>
-        <div>
-          <p>Remaining</p>
-          <strong id="remainingCount">0</strong>
-        </div>
+    <!-- Task List -->
+    <section class="card task-list-card" aria-label="Task list">
+      <div class="task-list-header">
+        <h2 class="task-list-title" id="taskListHeaderTitle">Tasks</h2>
+        <span id="activeFilterLabel" class="brand-date">Showing All</span>
       </div>
-    
+      <ul id="tasks" class="tasks-ul"></ul>
     </section>
-
-    <section class="task-list card">
-      <ul id="tasks"></ul>
   </div>
+
+  <!-- Non-blocking Toast Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
   <script src="work.js"></script>
 </body>
